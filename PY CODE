@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -10,14 +11,28 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from collections import Counter
 import seaborn as sns
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 # Load the dataset
 data = pd.read_csv('/content/sample_data/spotifyappreviews.csv')
 
 # Preprocess the 'Review' column
 def preprocess(text):
-    # Implement your preprocessing steps here (e.g., lowercasing, tokenization, removing stop words, etc.)
-    return text
+    # Lowercasing
+    text = text.lower()
+
+    # Tokenization
+    words = word_tokenize(text)
+
+    # Removing stopwords
+    stop_words = set(stopwords.words('english'))
+    words = [word for word in words if word not in stop_words]
+
+    # Join the words back to form the preprocessed text
+    preprocessed_text = " ".join(words)
+    return preprocessed_text
 
 data['Review'] = data['Review'].apply(preprocess)
 
@@ -114,4 +129,5 @@ recommendation_sizes = [review_sentiment_counts[0], review_sentiment_counts[2]]
 plt.bar(recommendation_labels, recommendation_sizes, color=recommendation_colors)
 plt.title('Recommendation Distribution')
 plt.show()
+
 
